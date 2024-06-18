@@ -87,6 +87,7 @@ func (b Body) String() string {
 
 func main() {
 	lang := flag.String("lang", "go", "A language that is used in a vscode-snippet path")
+	configPath := flag.String("path", "Library/Application Support/Code/User/snippets", "")
 	flag.Parse()
 
 	home, err := os.UserHomeDir()
@@ -94,9 +95,9 @@ func main() {
 		log.Fatalf("Error getting home path: %v", err)
 	}
 
-	configPath := path.Join(home, "Library/Application Support/Code/User/snippets", *lang+".json")
+	configFile := path.Join(home, *configPath, *lang+".json")
 
-	data, err := os.ReadFile(configPath)
+	data, err := os.ReadFile(configFile)
 	if err != nil {
 		log.Fatalf("Error reading config file: %v", err)
 	}
@@ -120,7 +121,7 @@ func main() {
 			item := defines.CompletionItem{
 				Kind:       &k,
 				Label:      prefix,
-				InsertText: strPtr(fmt.Sprintf("%s", snippet.Body)),
+				InsertText: strPtr(snippet.Body.String()),
 			}
 			items = append(items, item)
 		}
